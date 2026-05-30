@@ -6,7 +6,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurst, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playStar, playWrong, playWin } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
 
 const ROUND = 40;
 const topbar = mountTopbar(document.getElementById('topbar'));
@@ -115,7 +115,7 @@ function end() {
   startBtn.hidden = false;
 
   const stars = Math.max(1, Math.floor(score / 6));
-  addStars(stars);
+  awardStars('stars', stars);
   topbar.refreshStars();
   const isBest = recordGameStat('stars', 'highScore', score, { mode: 'max' });
   const best = getHighScore('stars');

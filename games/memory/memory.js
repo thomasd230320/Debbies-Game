@@ -5,7 +5,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin, playTap } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getGameStats } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getGameStats } from '../../js/shared/store.js';
 
 const EMOJIS = ['🐶','🐱','🦊','🐼','🐰','🦄','🐸','🐧','🦋','🐢','🐝','🐙','🌸','🍓','⭐','🌈','🍩','🎈'];
 
@@ -127,7 +127,7 @@ function starsForResult() {
 function win() {
   stopTimer();
   const stars = starsForResult();
-  addStars(stars);
+  awardStars('memory', stars);
   topbar.refreshStars();
 
   const bestMoves = recordGameStat('memory', 'bestMoves', moves, { mode: 'min' });

@@ -58,6 +58,33 @@
 }
 .shop-link:active { transform: scale(.95); }
 
+.streak-chip {
+  margin-top: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 3px solid var(--pink-deep);
+  border-radius: 999px;
+  padding: 8px 18px;
+  box-shadow: var(--shadow);
+}
+.nudge-chip {
+  margin-top: 14px;
+  text-decoration: none;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: #FFF7DD;
+  border: 3px solid var(--star);
+  border-radius: 999px;
+  padding: 8px 18px;
+  box-shadow: var(--shadow);
+  animation: float 3s ease-in-out infinite;
+}
+
 .pet-companion {
   display: flex;
   flex-direction: column;

@@ -4,6 +4,7 @@
    =========================================================== */
 
 import { playStar } from './sound.js';
+import './apply-theme.js'; // side effect: apply the saved colour theme on every page
 
 /** Tiny DOM factory: el('div', {class:'x'}, [childNodes|strings]) */
 export function el(tag, props = {}, children = []) {

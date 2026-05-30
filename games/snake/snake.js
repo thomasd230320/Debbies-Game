@@ -5,7 +5,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playPop, playWrong, playWin } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
 
 const GRID = 15;            // cells per side
 const canvas = document.getElementById('board');
@@ -108,7 +108,7 @@ function gameOver() {
   startBtn.hidden = false;
 
   const stars = Math.max(1, Math.floor(score / 4));
-  addStars(stars);
+  awardStars('snake', stars);
   topbar.refreshStars();
   const isBest = recordGameStat('snake', 'highScore', score, { mode: 'max' });
   const best = getHighScore('snake');

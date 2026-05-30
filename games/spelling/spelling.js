@@ -7,7 +7,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise, pickEncouragement, toast } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, recordLearningPlay } from '../../js/shared/store.js';
 import { speak, repeat, isSupported } from '../../js/shared/speech.js';
 import { WORD_LISTS } from './words.js';
 
@@ -94,10 +94,10 @@ function check() {
   attempts++;
 
   if (typed.toLowerCase() === current.word.toLowerCase()) {
-    const stars = STARS_PER_LEVEL[level] + (attempts === 1 ? 1 : 0); // first-try bonus
-    score += stars;
+    const base = STARS_PER_LEVEL[level] + (attempts === 1 ? 1 : 0); // first-try bonus
+    const earned = awardStars('spelling', base); // learning game → doubled
+    score += earned;
     elScore.textContent = score;
-    addStars(stars);
     topbar.refreshStars();
     starBurstFrom(elInput, 8);
     playCorrect();
@@ -133,6 +133,11 @@ function skip() {
 function finish() {
   const isBest = recordGameStat('spelling', 'highScore', score, { mode: 'max' });
   const best = getHighScore('spelling');
+  const streak = recordLearningPlay();
+  if (streak.bonus > 0) {
+    topbar.refreshStars();
+    setTimeout(() => toast(`🔥 ${streak.streak}-day learning streak! +${streak.bonus} ⭐`), 1400);
+  }
   setTimeout(() => {
     confetti();
     playWin();

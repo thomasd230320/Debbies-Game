@@ -8,7 +8,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurst, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playPop, playWrong, playWin, playStar } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
 
 const SIZE = 8;
 const TYPES = ['🍓', '🍬', '🍭', '🍇', '🍊', '🫐'];
@@ -281,7 +281,7 @@ function gravityAndRefill() {
 
 function endGame() {
   const stars = Math.max(1, Math.floor(score / 300));
-  addStars(stars);
+  awardStars('candy', stars);
   topbar.refreshStars();
   const isBest = recordGameStat('candy', 'highScore', score, { mode: 'max' });
   const best = getHighScore('candy');

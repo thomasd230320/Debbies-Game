@@ -3,14 +3,38 @@
    =========================================================== */
 
 import { GAMES } from './shared/config.js';
-import { getStars, isMuted, toggleMuted, getShop } from './shared/store.js';
-import { el } from './shared/ui.js';
-import { playTap } from './shared/sound.js';
+import { getStars, isMuted, toggleMuted, getShop, claimDailyBonus, getDaily } from './shared/store.js';
+import { el, toast, confetti } from './shared/ui.js';
+import { playTap, playStar } from './shared/sound.js';
 import { renderPet } from './shared/pet-render.js';
 import { PET_BY_ID } from './shared/shop-catalog.js';
 
+// daily welcome bonus (once per calendar day)
+const dailyBonus = claimDailyBonus(10);
+
 // total stars
-document.getElementById('star-total').textContent = getStars().toString();
+const starTotalEl = document.getElementById('star-total');
+starTotalEl.textContent = getStars().toString();
+
+// header extras: streak chip + spend nudge, injected after the controls row
+const controls = document.querySelector('.hub-controls');
+const daily = getDaily();
+if (daily.learnStreak >= 2) {
+  controls.append(el('div', { class: 'streak-chip' }, `🔥 ${daily.learnStreak}-day learning streak!`));
+}
+if (getStars() >= 30) {
+  controls.append(el('a', { class: 'nudge-chip', href: 'pet/index.html' },
+    `💰 You've got ${getStars()} ⭐ — go spend them!`));
+}
+
+// show the daily bonus once the page is up
+if (dailyBonus > 0) {
+  setTimeout(() => {
+    playStar();
+    confetti(40);
+    toast(`🎁 Welcome back! Daily bonus +${dailyBonus} ⭐`);
+  }, 400);
+}
 
 // pet companion (her dressed-up pet, or an adopt prompt)
 const shop = getShop();

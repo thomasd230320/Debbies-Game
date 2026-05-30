@@ -4,9 +4,9 @@
    =========================================================== */
 
 import { mountTopbar } from '../../js/shared/topbar.js';
-import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
+import { el, starBurstFrom, confetti, showModal, pickPraise, toast } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, recordLearningPlay } from '../../js/shared/store.js';
 
 const topbar = mountTopbar(document.getElementById('topbar'));
 
@@ -130,11 +130,16 @@ function end() {
   clearInterval(timer);
   accepting = false;
 
-  const stars = Math.max(1, Math.floor(score / 5)); // 1 star per 5 correct, min 1
-  addStars(stars);
+  const base = Math.max(1, Math.floor(score / 5)); // 1 star per 5 correct, min 1
+  const stars = awardStars('maths', base);         // learning game → doubled
   topbar.refreshStars();
   const isBest = recordGameStat('maths', 'highScore', score, { mode: 'max' });
   const best = getHighScore('maths');
+  const streak = recordLearningPlay();
+  if (streak.bonus > 0) {
+    topbar.refreshStars();
+    setTimeout(() => toast(`🔥 ${streak.streak}-day learning streak! +${streak.bonus} ⭐`), 1400);
+  }
 
   setTimeout(() => {
     if (score >= 10) confetti();

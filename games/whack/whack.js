@@ -5,7 +5,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playWrong, playWin, playPop } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
 
 const ROUND = 30;
 const HOLES = 9;
@@ -100,7 +100,7 @@ function end() {
   startBtn.hidden = false;
 
   const stars = Math.max(1, Math.floor(score / 8));
-  addStars(stars);
+  awardStars('whack', stars);
   topbar.refreshStars();
   const isBest = recordGameStat('whack', 'highScore', score, { mode: 'max' });
   const best = getHighScore('whack');

@@ -6,7 +6,7 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise, toast, pickEncouragement } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin } from '../../js/shared/sound.js';
-import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, recordLearningPlay } from '../../js/shared/store.js';
 import { speak } from '../../js/shared/speech.js';
 
 const PAIRS = [
@@ -31,7 +31,8 @@ const scoreEl = document.getElementById('score');
 
 let queue = [];
 let index = 0;
-let score = 0;
+let score = 0;    // number of correct matches
+let earned = 0;   // stars actually awarded (doubled for this learning game)
 let answered = false;
 
 document.getElementById('total').textContent = TOTAL;
@@ -47,7 +48,7 @@ function shuffle(arr) {
 
 function start() {
   queue = shuffle(PAIRS).slice(0, TOTAL);
-  index = 0; score = 0;
+  index = 0; score = 0; earned = 0;
   scoreEl.textContent = '0';
   loadQuestion();
 }
@@ -78,7 +79,7 @@ function onChoose(btn, opt, item) {
     btn.classList.add('correct');
     score++;
     scoreEl.textContent = score;
-    addStars(1);
+    earned += awardStars('wordmatch', 1); // learning game → doubled
     topbar.refreshStars();
     starBurstFrom(btn, 6);
     playCorrect();
@@ -101,6 +102,11 @@ function next() {
 function finish() {
   const isBest = recordGameStat('wordmatch', 'highScore', score, { mode: 'max' });
   const best = getHighScore('wordmatch');
+  const streak = recordLearningPlay();
+  if (streak.bonus > 0) {
+    topbar.refreshStars();
+    setTimeout(() => toast(`🔥 ${streak.streak}-day learning streak! +${streak.bonus} ⭐`), 1400);
+  }
   setTimeout(() => {
     confetti();
     playWin();
@@ -108,7 +114,7 @@ function finish() {
       title: pickPraise(),
       body: el('div', {}, [
         el('p', { style: { fontSize: '1.4rem', margin: '6px 0' } }, `🔤 You matched ${score} of ${TOTAL}!`),
-        el('p', { style: { fontSize: '1.2rem' } }, '⭐ +' + score + ' stars'),
+        el('p', { style: { fontSize: '1.2rem' } }, '⭐ +' + earned + ' stars'),
         isBest
           ? el('p', { style: { color: 'var(--pink-deep)', fontWeight: '700' } }, '🏆 New best!')
           : el('p', { class: 'subtle' }, `Best: ${best}`),

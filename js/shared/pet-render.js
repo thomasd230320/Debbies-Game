@@ -5,7 +5,7 @@
    =========================================================== */
 
 import { el } from './ui.js';
-import { PET_BY_ID, ITEM_BY_ID } from './shop-catalog.js';
+import { PET_BY_ID, ITEM_BY_ID, SLOTS } from './shop-catalog.js';
 
 /**
  * Build a pet display element.
@@ -27,9 +27,15 @@ export function renderPet(shop, size = 120) {
   stage.append(el('div', { class: 'pet-base' }, pet.emoji));
 
   const eq = shop.equipped || {};
-  for (const slot of ['hat', 'face', 'neck', 'held']) {
+  for (const slot of SLOTS) {
     const item = eq[slot] ? ITEM_BY_ID[eq[slot]] : null;
-    if (item) {
+    if (!item) continue;
+    if (item.css) {
+      // CSS-drawn accessory (collar / lead) — no emoji, colour via variable
+      const acc = el('div', { class: `pet-acc ${slot}` });
+      acc.style.setProperty('--acc-color', item.color);
+      stage.append(acc);
+    } else {
       stage.append(el('div', { class: `pet-acc ${slot}` }, item.emoji));
     }
   }

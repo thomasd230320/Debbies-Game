@@ -6,6 +6,10 @@
 
 const KEY = 'debbie.v1';
 
+import { GAMES } from './config.js';
+
+const LEARNING_MULTIPLIER = 2; // learning games reward 2x to nudge her toward them
+
 const DEFAULT_STATE = {
   totalStars: 0,
   muted: false,
@@ -15,8 +19,15 @@ const DEFAULT_STATE = {
     petName: '',
     ownedPets: [],
     ownedItems: [],
-    equipped: {},     // { hat, face, neck, held }
+    equipped: {},     // { hat, face, collar, neck, lead, held }
     happiness: 50,
+    ownedThemes: ['default'],
+    theme: 'default',
+  },
+  daily: {
+    lastBonusDate: '',
+    learnStreak: 0,
+    lastLearnDate: '',
   },
 };
 
@@ -133,4 +144,66 @@ export function saveShop(shop) {
   const s = load();
   s.shop = shop;
   save(s);
+}
+
+/* ---- earning: central award helper (learning games pay more) ---- */
+
+const LEARNING_IDS = new Set(GAMES.filter(g => g.learning).map(g => g.id));
+
+/**
+ * Award stars for a game result. Learning games get the multiplier.
+ * Returns the number of stars actually given (for display).
+ */
+export function awardStars(gameId, base) {
+  const mult = LEARNING_IDS.has(gameId) ? LEARNING_MULTIPLIER : 1;
+  const earned = Math.max(0, Math.round(base * mult));
+  addStars(earned);
+  return earned;
+}
+
+/* ---- daily bonus + learning streak ---- */
+
+function today() { return new Date().toISOString().slice(0, 10); }
+function yesterday() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+export function getDaily() {
+  const s = load();
+  if (!s.daily) s.daily = structuredClone(DEFAULT_STATE.daily);
+  s.daily = { ...structuredClone(DEFAULT_STATE.daily), ...s.daily };
+  return s.daily;
+}
+
+/** Give a once-per-day welcome bonus. Returns stars granted (0 if already claimed today). */
+export function claimDailyBonus(amount = 10) {
+  const s = load();
+  const daily = { ...structuredClone(DEFAULT_STATE.daily), ...(s.daily || {}) };
+  if (daily.lastBonusDate === today()) return 0;
+  daily.lastBonusDate = today();
+  s.daily = daily;
+  s.totalStars = (s.totalStars || 0) + amount;
+  save(s);
+  return amount;
+}
+
+/**
+ * Record that she played a learning game today; updates the day streak.
+ * Once per day grants a streak bonus (when streak >= 2). Returns {streak, bonus}.
+ */
+export function recordLearningPlay() {
+  const s = load();
+  const daily = { ...structuredClone(DEFAULT_STATE.daily), ...(s.daily || {}) };
+  if (daily.lastLearnDate === today()) {
+    return { streak: daily.learnStreak, bonus: 0 }; // already counted today
+  }
+  daily.learnStreak = daily.lastLearnDate === yesterday() ? daily.learnStreak + 1 : 1;
+  daily.lastLearnDate = today();
+  const bonus = daily.learnStreak >= 2 ? Math.min(daily.learnStreak * 2, 20) : 0;
+  s.daily = daily;
+  if (bonus > 0) s.totalStars = (s.totalStars || 0) + bonus;
+  save(s);
+  return { streak: daily.learnStreak, bonus };
 }

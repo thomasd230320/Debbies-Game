@@ -5,10 +5,11 @@
 import { mountTopbar } from '../js/shared/topbar.js';
 import { el, showModal, starBurstFrom, toast, confetti, pickPraise } from '../js/shared/ui.js';
 import { getStars, spendStars, getShop, saveShop } from '../js/shared/store.js';
-import { playStar, playCorrect, playWrong } from '../js/shared/sound.js';
+import { playStar, playCoin, playCorrect, playWrong } from '../js/shared/sound.js';
 import { renderPet } from '../js/shared/pet-render.js';
+import { applyTheme } from '../js/shared/apply-theme.js';
 import {
-  PETS, ACCESSORIES, SLOTS, SLOT_LABELS, PET_BY_ID, ITEM_BY_ID,
+  PETS, ACCESSORIES, SLOTS, SLOT_LABELS, PET_BY_ID, ITEM_BY_ID, THEMES,
 } from '../js/shared/shop-catalog.js';
 
 const FEED_COST = 3;
@@ -45,7 +46,7 @@ function buy(name, cost, btn, onYes) {
           if (spendStars(cost)) {
             onYes();
             persist();
-            playStar();
+            playCoin();
             if (btn) starBurstFrom(btn, 8);
             topbar.refreshStars();
             toast(pickPraise());
@@ -70,7 +71,7 @@ function drawPet() {
 
   const feedBtn = document.getElementById('feed-btn');
   if (!pet) {
-    petHint.textContent = 'Go to the 🏡 Adopt tab to choose your first pet (puppy & kitten are free!).';
+    petHint.textContent = 'Go to the 🏡 Adopt tab to choose your first pet (the chick is free!).';
     feedBtn.style.display = 'none';
   } else {
     petHint.textContent = '';
@@ -230,8 +231,12 @@ function drawDress() {
         }, `${item.cost} ⭐`);
       }
 
+      const preview = item.css
+        ? (() => { const s = el('div', { class: 'item-swatch' }); s.style.background = item.color; return s; })()
+        : el('div', { class: 'item-emoji' }, item.emoji);
+
       grid.append(el('div', { class: 'shop-item' + (isEquipped ? ' equipped' : isOwned ? ' owned' : '') }, [
-        el('div', { class: 'item-emoji' }, item.emoji),
+        preview,
         el('div', { class: 'item-name' }, item.name),
         action,
       ]));
@@ -246,11 +251,52 @@ function drawDress() {
 /* keep the hub mini pet (if this were embedded) — no-op placeholder for rename reuse */
 function drawHubMini() { /* hub re-reads on its own load */ }
 
+/* ---------- Themes tab ---------- */
+const themeGrid = document.getElementById('theme-grid');
+function drawThemes() {
+  themeGrid.innerHTML = '';
+  for (const theme of THEMES) {
+    const isOwned = shop.ownedThemes.includes(theme.id);
+    const isCurrent = shop.theme === theme.id;
+
+    const swatch = el('div', { class: 'item-swatch theme-swatch' });
+    swatch.style.background = theme.vars['--grad-soft'];
+    swatch.style.borderColor = theme.vars['--pink-deep'];
+
+    let action;
+    if (isCurrent) {
+      action = el('div', { class: 'item-action is-current' }, '✔ Using');
+    } else if (isOwned) {
+      action = el('button', {
+        class: 'item-action is-choose',
+        onClick: () => { shop.theme = theme.id; persist(); applyTheme(theme.id); refreshAll(); },
+      }, 'Use it');
+    } else {
+      action = el('button', {
+        class: 'item-action is-cost' + (canAfford(theme.cost) ? '' : ' cant'),
+        onClick: (e) => buy(theme.name + ' theme', theme.cost, e.currentTarget, () => {
+          shop.ownedThemes.push(theme.id);
+          shop.theme = theme.id;
+          applyTheme(theme.id);
+        }),
+      }, `${theme.cost} ⭐`);
+    }
+
+    themeGrid.append(el('div', { class: 'shop-item' + (isCurrent ? ' equipped' : isOwned ? ' owned' : '') }, [
+      el('div', { class: 'item-emoji' }, theme.emoji),
+      swatch,
+      el('div', { class: 'item-name' }, theme.name),
+      action,
+    ]));
+  }
+}
+
 function refreshAll() {
   shop = getShop();         // re-read to stay in sync
   drawPet();
   drawAdopt();
   drawDress();
+  drawThemes();
 }
 
 /* ---------- tabs ---------- */
@@ -260,6 +306,7 @@ function switchTab(name) {
   document.getElementById('tab-pet').hidden = name !== 'pet';
   document.getElementById('tab-adopt').hidden = name !== 'adopt';
   document.getElementById('tab-dress').hidden = name !== 'dress';
+  document.getElementById('tab-theme').hidden = name !== 'theme';
 }
 document.getElementById('tabs').addEventListener('click', (e) => {
   const chip = e.target.closest('.chip');

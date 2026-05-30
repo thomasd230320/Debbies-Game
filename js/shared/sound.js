@@ -107,3 +107,12 @@ export function playTap() {
 export function playFreq(freq, dur = 0.35) {
   play([{ f: freq, t: 0, d: dur, type: 'sine', v: 0.2 }]);
 }
+
+// Cha-ching! coin sound for purchases
+export function playCoin() {
+  play([
+    { f: 988,  t: 0,    d: 0.09, type: 'square', v: 0.14 },
+    { f: 1319, t: 0.07, d: 0.16, type: 'square', v: 0.14 },
+    { f: 1760, t: 0.15, d: 0.18, type: 'triangle', v: 0.12 },
+  ]);
+}
