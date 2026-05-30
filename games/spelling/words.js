@@ -1,0 +1,58 @@
+/* ===========================================================
+   words.js — age-9 spelling word lists by difficulty.
+   Each word has an optional hint sentence for context.
+   =========================================================== */
+
+export const WORD_LISTS = {
+  easy: [
+    { word: 'happy', hint: 'I feel happy when I play.' },
+    { word: 'jump', hint: 'The frog can jump high.' },
+    { word: 'green', hint: 'Grass is green.' },
+    { word: 'ship', hint: 'The ship sails on the sea.' },
+    { word: 'apple', hint: 'An apple a day is healthy.' },
+    { word: 'sunny', hint: 'It is a sunny day.' },
+    { word: 'dog', hint: 'The dog likes to run.' },
+    { word: 'tree', hint: 'A bird sat in the tree.' },
+    { word: 'star', hint: 'I can see a star at night.' },
+    { word: 'cake', hint: 'We ate cake at the party.' },
+    { word: 'fish', hint: 'The fish swims in the pond.' },
+    { word: 'rain', hint: 'I use an umbrella in the rain.' },
+    { word: 'book', hint: 'I read a good book.' },
+    { word: 'milk', hint: 'I drink a glass of milk.' },
+    { word: 'play', hint: 'Let us play a game.' },
+  ],
+  medium: [
+    { word: 'rabbit', hint: 'The rabbit hopped away.' },
+    { word: 'school', hint: 'I learn lots at school.' },
+    { word: 'friend', hint: 'My best friend is kind.' },
+    { word: 'because', hint: 'I smiled because I was happy.' },
+    { word: 'butter', hint: 'I put butter on my toast.' },
+    { word: 'window', hint: 'The cat sat on the window.' },
+    { word: 'pencil', hint: 'I write with a pencil.' },
+    { word: 'orange', hint: 'An orange is a juicy fruit.' },
+    { word: 'garden', hint: 'Flowers grow in the garden.' },
+    { word: 'dragon', hint: 'The dragon breathed fire.' },
+    { word: 'jumper', hint: 'I wear a warm jumper.' },
+    { word: 'kitten', hint: 'The kitten is very playful.' },
+    { word: 'sister', hint: 'My sister loves games.' },
+    { word: 'animal', hint: 'A lion is a wild animal.' },
+    { word: 'people', hint: 'Lots of people came to the show.' },
+  ],
+  hard: [
+    { word: 'beautiful', hint: 'The rainbow is beautiful.' },
+    { word: 'different', hint: 'We all like different things.' },
+    { word: 'important', hint: 'It is important to be kind.' },
+    { word: 'favourite', hint: 'Pink is my favourite colour.' },
+    { word: 'necessary', hint: 'Sleep is necessary to grow.' },
+    { word: 'chocolate', hint: 'I love chocolate ice cream.' },
+    { word: 'adventure', hint: 'We went on a big adventure.' },
+    { word: 'butterfly', hint: 'A butterfly has pretty wings.' },
+    { word: 'dinosaur', hint: 'A dinosaur lived long ago.' },
+    { word: 'wonderful', hint: 'We had a wonderful day.' },
+    { word: 'tomorrow', hint: 'We will play again tomorrow.' },
+    { word: 'remember', hint: 'I remember my best birthday.' },
+    { word: 'surprise', hint: 'The gift was a big surprise.' },
+    { word: 'special', hint: 'You are very special.' },
+    { word: 'because', hint: 'I won because I tried hard.' },
+  ],
+};

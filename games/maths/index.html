@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Maths Blaster ➕</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    .panel { max-width: 520px; margin: 0 auto; }
+    .question-box {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 4px solid var(--pink);
+      padding: 26px 16px;
+      margin: 18px auto;
+    }
+    .question {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.6rem, 1.5rem + 8vw, 4rem);
+      color: var(--ink);
+    }
+    .answers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 420px;
+      margin: 18px auto;
+    }
+    .answer-btn {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.6rem, 1rem + 4vw, 2.2rem);
+      color: var(--ink);
+      background: #fff;
+      border: 4px solid var(--blue);
+      border-radius: var(--radius-sm);
+      min-height: 76px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      touch-action: manipulation;
+      transition: transform .1s ease;
+    }
+    .answer-btn:active { transform: scale(.95); }
+    .answer-btn.correct { background: var(--good); border-color: var(--good-deep); color: #fff; }
+    .answer-btn.wrong { background: var(--bad); border-color: var(--bad-deep); color: #fff; }
+    .hud {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.2rem;
+    }
+    .timer-bar-wrap { height: 14px; background: #fff; border-radius: 999px; overflow: hidden; box-shadow: var(--shadow); margin: 12px auto; max-width: 420px; }
+    .timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--blue-deep), var(--pink-deep)); transition: width 1s linear; }
+    .streak { color: var(--pink-deep); font-weight: 700; min-height: 1.4em; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Maths Blaster ➕</h1>
+
+    <div id="setup" class="panel">
+      <p class="subtle">Pick what to practise, then blast as many as you can!</p>
+
+      <p style="font-family:'Fredoka';font-weight:600;margin:14px 0 4px">What sums?</p>
+      <div class="chip-row" id="mode-row">
+        <button class="chip active" data-mode="add">➕ Add</button>
+        <button class="chip" data-mode="sub">➖ Take away</button>
+        <button class="chip" data-mode="times">✖️ Times tables</button>
+        <button class="chip" data-mode="mix">🎲 Mix it up</button>
+      </div>
+
+      <p style="font-family:'Fredoka';font-weight:600;margin:14px 0 4px">How tricky?</p>
+      <div class="chip-row" id="level-row">
+        <button class="chip active" data-level="1">⭐ Easy</button>
+        <button class="chip" data-level="2">⭐⭐ Medium</button>
+        <button class="chip" data-level="3">⭐⭐⭐ Hard</button>
+      </div>
+
+      <p style="font-family:'Fredoka';font-weight:600;margin:14px 0 4px">How long?</p>
+      <div class="chip-row" id="time-row">
+        <button class="chip" data-time="30">30s</button>
+        <button class="chip active" data-time="60">60s</button>
+        <button class="chip" data-time="90">90s</button>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="start-btn">🚀 Start!</button>
+    </div>
+
+    <div id="play" class="panel" hidden>
+      <div class="hud">
+        <span>🎯 <strong id="score">0</strong></span>
+        <span>⏱️ <strong id="time-left">60</strong>s</span>
+      </div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+      <div class="streak" id="streak"></div>
+      <div class="question-box"><div class="question" id="question">3 + 4</div></div>
+      <div class="answers" id="answers"></div>
+    </div>
+  </main>
+
+  <script type="module" src="maths.js"></script>
+</body>
+</html>

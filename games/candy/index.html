@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Candy Match 🍬</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="candy.css" />
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Candy Match 🍬</h1>
+    <p class="subtle">Tap two sweets next to each other to swap and match 3!</p>
+
+    <div class="candy-hud">
+      <span>🍬 <strong id="score">0</strong></span>
+      <span>🔄 Moves left: <strong id="moves">20</strong></span>
+    </div>
+
+    <div class="candy-wrap">
+      <div class="candy-board" id="board"></div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" id="restart">🔄 New Game</button>
+  </main>
+
+  <script type="module" src="candy.js"></script>
+</body>
+</html>

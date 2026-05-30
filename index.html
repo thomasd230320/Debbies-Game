@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Debbie's Game 🎮</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/hub.css" />
+</head>
+<body>
+  <header class="hub-header">
+    <h1 class="hub-title title-gradient">Debbie's Game</h1>
+    <p class="hub-subtitle">Pick a game and have fun! ✨</p>
+    <div class="hub-controls">
+      <div class="hub-stars">⭐ <span id="star-total">0</span> stars</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="game-grid" id="game-grid"><!-- cards injected by hub.js --></div>
+  </main>
+
+  <footer class="hub-footer">
+    Made with 💖 for Debbie
+    <div style="margin-top:8px">
+      <button class="chip" id="mute-toggle">🔊 Sound on</button>
+    </div>
+  </footer>
+
+  <script type="module" src="js/hub.js"></script>
+</body>
+</html>

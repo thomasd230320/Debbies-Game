@@ -1,0 +1,99 @@
+/* ===========================================================
+   hub.css — home screen layout
+   =========================================================== */
+
+.hub-header {
+  text-align: center;
+  padding: 28px 16px 8px;
+}
+.hub-title {
+  font-size: clamp(2.4rem, 1.5rem + 6vw, 4.5rem);
+  line-height: 1.05;
+}
+.hub-subtitle {
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(1rem, .9rem + 1vw, 1.4rem);
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+.hub-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--ink);
+  background: #fff;
+  border: 4px solid var(--star);
+  border-radius: 999px;
+  padding: 8px 22px;
+  box-shadow: var(--shadow);
+}
+
+.hub-controls {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 4px;
+}
+
+/* responsive card grid */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(14px, 3vw, 26px);
+  max-width: 860px;
+  margin: 18px auto 60px;
+  padding: 0 clamp(16px, 4vw, 28px);
+}
+
+.game-card {
+  text-decoration: none;
+  color: var(--ink);
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px 18px;
+  text-align: center;
+  border: 4px solid transparent;
+  transition: transform .15s ease, box-shadow .15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  touch-action: manipulation;
+}
+.game-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-lift); }
+.game-card:active { transform: scale(.97); }
+.game-card.accent-blue { border-color: var(--blue); }
+.game-card.accent-pink { border-color: var(--pink); }
+
+.game-card .emoji {
+  font-size: clamp(2.6rem, 2rem + 4vw, 3.6rem);
+  filter: drop-shadow(0 4px 6px rgba(127, 150, 255, .25));
+}
+.game-card .name {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.1rem, 1rem + 1vw, 1.4rem);
+}
+.game-card .blurb { font-size: .95rem; color: var(--ink-soft); }
+.game-card .tag {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: #fff;
+}
+.tag.learn { background: var(--blue-deep); }
+.tag.fun { background: var(--pink-deep); }
+
+.hub-footer {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 10px 16px 40px;
+  font-size: .9rem;
+}
