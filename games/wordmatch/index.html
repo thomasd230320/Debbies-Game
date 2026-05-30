@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Word Match 🔤</title>
+  <meta name="theme-color" content="#AEDFF7" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    .panel { max-width: 520px; margin: 0 auto; }
+    .word-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 4px solid var(--blue);
+      padding: 22px 16px;
+      margin: 16px auto;
+    }
+    .the-word {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 1rem + 7vw, 3.2rem);
+      color: var(--ink);
+      text-transform: lowercase;
+    }
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 420px;
+      margin: 16px auto;
+    }
+    .choice {
+      aspect-ratio: 1.3;
+      font-size: clamp(2.4rem, 1rem + 9vw, 4rem);
+      background: #fff;
+      border: 4px solid var(--lilac);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .1s ease;
+    }
+    .choice:active { transform: scale(.95); }
+    .choice.correct { background: var(--good); border-color: var(--good-deep); }
+    .choice.wrong { background: var(--bad); border-color: var(--bad-deep); }
+    .hud { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Word Match 🔤</h1>
+    <p class="subtle">Read the word and tap the picture that matches!</p>
+    <div class="hud">📖 Word <strong id="num">1</strong> of <strong id="total">10</strong> · 🎯 <strong id="score">0</strong></div>
+    <div class="word-card">
+      <div class="the-word" id="word">apple</div>
+      <button class="btn btn-blue" id="say-btn" style="margin-top:10px">🔊 Say it</button>
+    </div>
+    <div class="choices" id="choices"></div>
+  </main>
+  <script type="module" src="wordmatch.js"></script>
+</body>
+</html>

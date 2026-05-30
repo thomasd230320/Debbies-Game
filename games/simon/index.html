@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Simon Says 🎵</title>
+  <meta name="theme-color" content="#AEDFF7" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    .simon {
+      width: min(86vw, 360px);
+      aspect-ratio: 1;
+      margin: 18px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .pad {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      opacity: .55;
+      transition: opacity .12s ease, transform .12s ease;
+      touch-action: manipulation;
+    }
+    .pad.lit { opacity: 1; transform: scale(1.04); }
+    .pad.p0 { background: var(--blue-deep); }
+    .pad.p1 { background: var(--pink-deep); }
+    .pad.p2 { background: #B49BE6; }
+    .pad.p3 { background: var(--star); }
+    .hud { font-family: 'Fredoka', sans-serif; font-size: 1.25rem; }
+    .status { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; min-height: 1.4em; color: var(--pink-deep); }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Simon Says 🎵</h1>
+    <p class="subtle">Watch the colours light up, then tap them in the same order!</p>
+    <div class="hud">🏅 Round <strong id="round">0</strong></div>
+    <div class="status" id="status"></div>
+    <div class="simon" id="simon">
+      <div class="pad p0" data-pad="0"></div>
+      <div class="pad p1" data-pad="1"></div>
+      <div class="pad p2" data-pad="2"></div>
+      <div class="pad p3" data-pad="3"></div>
+    </div>
+    <button class="btn btn-primary btn-lg" id="start-btn">🚀 Start!</button>
+  </main>
+  <script type="module" src="simon.js"></script>
+</body>
+</html>

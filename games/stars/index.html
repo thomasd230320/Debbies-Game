@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Catch the Stars ⭐</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    #arena {
+      position: relative;
+      width: min(92vw, 460px);
+      height: min(70vh, 560px);
+      margin: 14px auto;
+      background: linear-gradient(160deg, #EAF7FF, #FFF0F8);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+    .faller { position: absolute; font-size: 2rem; will-change: transform; }
+    #basket {
+      position: absolute;
+      bottom: 8px;
+      font-size: 2.6rem;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .hud { display: flex; justify-content: center; gap: 22px; font-family: 'Fredoka', sans-serif; font-size: 1.25rem; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Catch the Stars ⭐</h1>
+    <p class="subtle">Move the basket 🧺 to catch the stars — dodge the bombs 💣!</p>
+    <div class="hud">
+      <span>⭐ <strong id="score">0</strong></span>
+      <span>⏱️ <strong id="time">40</strong>s</span>
+    </div>
+    <div id="arena">
+      <div id="basket">🧺</div>
+    </div>
+    <button class="btn btn-primary btn-lg" id="start-btn">🚀 Start!</button>
+  </main>
+  <script type="module" src="stars.js"></script>
+</body>
+</html>

@@ -102,3 +102,8 @@ export function playPop() {
 export function playTap() {
   play([{ f: 520, t: 0, d: 0.05, type: 'sine', v: 0.1 }]);
 }
+
+// Generic single note (used by Simon Says pads)
+export function playFreq(freq, dur = 0.35) {
+  play([{ f: freq, t: 0, d: dur, type: 'sine', v: 0.2 }]);
+}
