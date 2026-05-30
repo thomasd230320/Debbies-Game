@@ -10,6 +10,14 @@ const DEFAULT_STATE = {
   totalStars: 0,
   muted: false,
   games: {}, // { [gameId]: { ...stats } }
+  shop: {
+    pet: null,        // current pet id, or null until adopted
+    petName: '',
+    ownedPets: [],
+    ownedItems: [],
+    equipped: {},     // { hat, face, neck, held }
+    happiness: 50,
+  },
 };
 
 let memoryFallback = null; // used if localStorage throws
@@ -93,3 +101,36 @@ export function setMuted(v) {
   return s.muted;
 }
 export function toggleMuted() { return setMuted(!isMuted()); }
+
+/* ---- spending + star shop ---- */
+
+/**
+ * Spend stars like coins. Only deducts if she can afford it.
+ * Returns true on success, false if too few stars.
+ */
+export function spendStars(n) {
+  const s = load();
+  if ((s.totalStars || 0) < n) return false;
+  s.totalStars -= n;
+  save(s);
+  return true;
+}
+
+/** Get the shop/pet state (filling defaults for older saves). */
+export function getShop() {
+  const s = load();
+  if (!s.shop) {
+    s.shop = structuredClone(DEFAULT_STATE.shop);
+    save(s);
+  }
+  // ensure all keys exist even if an older save is missing some
+  s.shop = { ...structuredClone(DEFAULT_STATE.shop), ...s.shop };
+  return s.shop;
+}
+
+/** Persist the shop/pet state. */
+export function saveShop(shop) {
+  const s = load();
+  s.shop = shop;
+  save(s);
+}

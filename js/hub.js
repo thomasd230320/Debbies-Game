@@ -3,12 +3,23 @@
    =========================================================== */
 
 import { GAMES } from './shared/config.js';
-import { getStars, isMuted, toggleMuted } from './shared/store.js';
+import { getStars, isMuted, toggleMuted, getShop } from './shared/store.js';
 import { el } from './shared/ui.js';
 import { playTap } from './shared/sound.js';
+import { renderPet } from './shared/pet-render.js';
+import { PET_BY_ID } from './shared/shop-catalog.js';
 
 // total stars
 document.getElementById('star-total').textContent = getStars().toString();
+
+// pet companion (her dressed-up pet, or an adopt prompt)
+const shop = getShop();
+const companion = document.getElementById('pet-companion');
+companion.append(renderPet(shop, 92));
+const petLabel = shop.pet
+  ? (shop.petName || PET_BY_ID[shop.pet]?.name || 'My Pet')
+  : 'Adopt a pet!';
+companion.append(el('div', { class: 'pet-label' }, petLabel));
 
 // game cards
 const grid = document.getElementById('game-grid');
