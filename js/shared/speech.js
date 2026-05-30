@@ -45,14 +45,30 @@ if (supported) {
 
 export function isSupported() { return supported; }
 
+// Prefer a calm, natural, friendly English voice. Many platforms ship
+// a nicer-sounding female/neural voice — pick those by name first.
+const NICE_VOICES = [
+  /google uk english female/i,
+  /\bsamantha\b/i,        // macOS/iOS
+  /\bkaren\b/i, /\bserena\b/i, /\bsonia\b/i, /\blibby\b/i, /\bsophie\b/i,
+  /\baria\b/i, /\bjenny\b/i, /natural/i,   // Microsoft neural voices
+  /google us english/i,
+  /female/i,
+];
+
 function pickVoice() {
   const v = cachedVoices;
   if (!v.length) return null;
+  const en = v.filter(x => /^en/i.test(x.lang));
+  const pool = en.length ? en : v;
+  for (const re of NICE_VOICES) {
+    const match = pool.find(x => re.test(x.name));
+    if (match) return match;
+  }
   return (
-    v.find(x => /en-GB/i.test(x.lang)) ||
-    v.find(x => /en-US/i.test(x.lang)) ||
-    v.find(x => /^en/i.test(x.lang)) ||
-    v[0]
+    pool.find(x => /en-GB/i.test(x.lang)) ||
+    pool.find(x => /en-US/i.test(x.lang)) ||
+    pool[0]
   );
 }
 
@@ -71,7 +87,7 @@ function startKeepAlive() {
  * Speak text aloud. Returns a promise that resolves when finished
  * (or immediately if speech isn't supported).
  */
-export function speak(text, { rate = 0.85, pitch = 1.05 } = {}) {
+export function speak(text, { rate = 0.78, pitch = 0.95 } = {}) {
   return new Promise(resolve => {
     if (!supported) { resolve(); return; }
     lastText = text;

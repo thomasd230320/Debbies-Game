@@ -1,11 +1,12 @@
 /* ===========================================================
    Candy Match-3 — swap adjacent candies to make rows/columns
-   of 3+. Cleared candies fall, new ones drop in, cascades chain.
-   Tap-to-select OR swipe to swap. Move-limited rounds.
+   of 3+. Cleared candies pop, the rest slide down with gravity,
+   and new ones fall in from the top. Smoothly animated via
+   transform/translate. Tap-to-select OR swipe to swap.
    =========================================================== */
 
 import { mountTopbar } from '../../js/shared/topbar.js';
-import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
+import { el, starBurst, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playPop, playWrong, playWin, playStar } from '../../js/shared/sound.js';
 import { addStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
 
@@ -13,24 +14,67 @@ const SIZE = 8;
 const TYPES = ['🍓', '🍬', '🍭', '🍇', '🍊', '🫐'];
 const START_MOVES = 20;
 
+// animation timings (kept a touch longer than the CSS transition)
+const SWAP_MS = 320;
+const CLEAR_MS = 270;
+const FALL_MS = 360;
+
 const topbar = mountTopbar(document.getElementById('topbar'));
 const boardEl = document.getElementById('board');
 const scoreEl = document.getElementById('score');
 const movesEl = document.getElementById('moves');
 
-let grid = [];        // grid[r][c] = type index
-let cells = [];       // cells[r][c] = DOM node
+let grid = [];        // grid[r][c] = candy object | null  ({ type, el, inner })
 let score = 0;
 let movesLeft = START_MOVES;
 let selected = null;  // {r,c}
-let busy = false;     // block input during animations
-
-boardEl.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
+let busy = false;
+let cell = 0;         // pixel size of one cell
 
 const rndType = () => Math.floor(Math.random() * TYPES.length);
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+const inBounds = (r, c) => r >= 0 && r < SIZE && c >= 0 && c < SIZE;
+const adjacent = (a, b) => Math.abs(a.r - b.r) + Math.abs(a.c - b.c) === 1;
+
+function measure() { cell = boardEl.clientWidth / SIZE; }
+
+function makeCandy(type) {
+  const inner = document.createElement('div');
+  inner.className = 'candy-inner';
+  inner.textContent = TYPES[type];
+  const outer = document.createElement('div');
+  outer.className = 'candy';
+  outer.append(inner);
+  boardEl.append(outer);
+  return { type, el: outer, inner };
+}
+
+/** Position a candy at grid (r,c). instant = snap without animating. */
+function place(candy, r, c, instant = false) {
+  candy.el.style.width = cell + 'px';
+  candy.el.style.height = cell + 'px';
+  const tf = `translate(${c * cell}px, ${r * cell}px)`;
+  if (instant) {
+    candy.el.classList.add('no-anim');
+    candy.el.style.transform = tf;
+    void candy.el.offsetWidth; // force reflow so the next change animates
+    candy.el.classList.remove('no-anim');
+  } else {
+    candy.el.style.transform = tf;
+  }
+}
 
 /* ---- board setup with no starting matches ---- */
-function makeGrid() {
+function newGame() {
+  busy = false;
+  selected = null;
+  score = 0;
+  movesLeft = START_MOVES;
+  scoreEl.textContent = '0';
+  movesEl.textContent = START_MOVES;
+  boardEl.innerHTML = '';
+  measure();
+
   grid = [];
   for (let r = 0; r < SIZE; r++) {
     grid[r] = [];
@@ -39,102 +83,99 @@ function makeGrid() {
       do {
         t = rndType();
       } while (
-        (c >= 2 && grid[r][c - 1] === t && grid[r][c - 2] === t) ||
-        (r >= 2 && grid[r - 1][c] === t && grid[r - 2][c] === t)
+        (c >= 2 && grid[r][c - 1].type === t && grid[r][c - 2].type === t) ||
+        (r >= 2 && grid[r - 1][c].type === t && grid[r - 2][c].type === t)
       );
-      grid[r][c] = t;
+      const candy = makeCandy(t);
+      grid[r][c] = candy;
+      place(candy, r, c, true);
     }
   }
 }
 
-function render() {
-  boardEl.innerHTML = '';
-  cells = [];
-  for (let r = 0; r < SIZE; r++) {
-    cells[r] = [];
-    for (let c = 0; c < SIZE; c++) {
-      const cell = el('div', { class: 'candy', text: TYPES[grid[r][c]] });
-      cell.dataset.r = r;
-      cell.dataset.c = c;
-      bindInput(cell, r, c);
-      boardEl.append(cell);
-      cells[r][c] = cell;
-    }
-  }
+/* ---- input (tap-to-select + swipe) via board coordinates ---- */
+function cellFromEvent(e) {
+  const rect = boardEl.getBoundingClientRect();
+  const c = Math.floor((e.clientX - rect.left) / cell);
+  const r = Math.floor((e.clientY - rect.top) / cell);
+  return inBounds(r, c) ? { r, c } : null;
 }
 
-function paint(r, c) {
-  cells[r][c].textContent = TYPES[grid[r][c]];
-}
+let downCell = null, downX = 0, downY = 0;
 
-/* ---- input: tap-to-select and swipe ---- */
-function bindInput(cell, r, c) {
-  cell.addEventListener('click', () => onTap(r, c));
+boardEl.addEventListener('pointerdown', (e) => {
+  if (busy) return;
+  const p = cellFromEvent(e);
+  if (!p) return;
+  downCell = p; downX = e.clientX; downY = e.clientY;
+});
 
-  let sx = 0, sy = 0;
-  cell.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; });
-  cell.addEventListener('pointerup', (e) => {
-    const dx = e.clientX - sx, dy = e.clientY - sy;
-    if (Math.abs(dx) < 18 && Math.abs(dy) < 18) return; // treat as tap (handled by click)
-    let tr = r, tc = c;
+boardEl.addEventListener('pointerup', (e) => {
+  if (busy || !downCell) return;
+  const start = downCell;
+  downCell = null;
+  const dx = e.clientX - downX, dy = e.clientY - downY;
+  const threshold = cell * 0.3;
+  if (Math.abs(dx) < threshold && Math.abs(dy) < threshold) {
+    onTap(start.r, start.c);
+  } else {
+    let tr = start.r, tc = start.c;
     if (Math.abs(dx) > Math.abs(dy)) tc += dx > 0 ? 1 : -1;
     else tr += dy > 0 ? 1 : -1;
-    if (inBounds(tr, tc)) trySwap({ r, c }, { r: tr, c: tc });
-  });
-}
+    if (inBounds(tr, tc)) doSwap(start, { r: tr, c: tc });
+  }
+});
 
-const inBounds = (r, c) => r >= 0 && r < SIZE && c >= 0 && c < SIZE;
-const adjacent = (a, b) => Math.abs(a.r - b.r) + Math.abs(a.c - b.c) === 1;
-
-function clearSelection() {
-  if (selected) cells[selected.r][selected.c].classList.remove('selected');
-  selected = null;
+function setSelected(r, c, on) {
+  if (grid[r][c]) grid[r][c].el.classList.toggle('selected', on);
 }
 
 function onTap(r, c) {
   if (busy) return;
   if (!selected) {
     selected = { r, c };
-    cells[r][c].classList.add('selected');
+    setSelected(r, c, true);
     return;
   }
-  if (selected.r === r && selected.c === c) { clearSelection(); return; }
+  if (selected.r === r && selected.c === c) {
+    setSelected(r, c, false);
+    selected = null;
+    return;
+  }
   if (adjacent(selected, { r, c })) {
     const from = selected;
-    clearSelection();
-    trySwap(from, { r, c });
+    setSelected(from.r, from.c, false);
+    selected = null;
+    doSwap(from, { r, c });
   } else {
-    clearSelection();
+    setSelected(selected.r, selected.c, false);
     selected = { r, c };
-    cells[r][c].classList.add('selected');
+    setSelected(r, c, true);
   }
 }
 
-function swapData(a, b) {
+function swapCells(a, b) {
   const t = grid[a.r][a.c];
   grid[a.r][a.c] = grid[b.r][b.c];
   grid[b.r][b.c] = t;
 }
 
-async function trySwap(a, b) {
+async function doSwap(a, b) {
   if (busy || !adjacent(a, b) || movesLeft <= 0) return;
   busy = true;
-  clearSelection();
 
-  swapData(a, b);
-  paint(a.r, a.c); paint(b.r, b.c);
+  swapCells(a, b);
+  place(grid[a.r][a.c], a.r, a.c);
+  place(grid[b.r][b.c], b.r, b.c);
+  await wait(SWAP_MS);
 
-  const matches = findMatches();
-  if (matches.size === 0) {
-    // illegal — swap back with a wobble
+  if (findMatches().size === 0) {
+    // illegal — slide back
     playWrong();
-    cells[a.r][a.c].classList.add('bad-swap');
-    cells[b.r][b.c].classList.add('bad-swap');
-    await wait(220);
-    swapData(a, b);
-    paint(a.r, a.c); paint(b.r, b.c);
-    cells[a.r][a.c].classList.remove('bad-swap');
-    cells[b.r][b.c].classList.remove('bad-swap');
+    swapCells(a, b);
+    place(grid[a.r][a.c], a.r, a.c);
+    place(grid[b.r][b.c], b.r, b.c);
+    await wait(SWAP_MS);
     busy = false;
     return;
   }
@@ -149,26 +190,24 @@ async function trySwap(a, b) {
 /* ---- match detection ---- */
 function findMatches() {
   const matched = new Set();
-  // horizontal runs
   for (let r = 0; r < SIZE; r++) {
     let run = 1;
     for (let c = 1; c <= SIZE; c++) {
-      if (c < SIZE && grid[r][c] === grid[r][c - 1]) {
+      if (c < SIZE && grid[r][c] && grid[r][c - 1] && grid[r][c].type === grid[r][c - 1].type) {
         run++;
       } else {
-        if (run >= 3) for (let k = c - run; k < c; k++) matched.add(r * SIZE + k);
+        if (run >= 3) for (let k = c - run; k < c; k++) matched.add(r + ',' + k);
         run = 1;
       }
     }
   }
-  // vertical runs
   for (let c = 0; c < SIZE; c++) {
     let run = 1;
     for (let r = 1; r <= SIZE; r++) {
-      if (r < SIZE && grid[r][c] === grid[r - 1][c]) {
+      if (r < SIZE && grid[r][c] && grid[r - 1][c] && grid[r][c].type === grid[r - 1][c].type) {
         run++;
       } else {
-        if (run >= 3) for (let k = r - run; k < r; k++) matched.add(k * SIZE + c);
+        if (run >= 3) for (let k = r - run; k < r; k++) matched.add(k + ',' + c);
         run = 1;
       }
     }
@@ -176,7 +215,7 @@ function findMatches() {
   return matched;
 }
 
-/* ---- the clear -> gravity -> refill loop ---- */
+/* ---- clear -> gravity -> refill, repeated for cascades ---- */
 async function resolveCascades() {
   let chain = 0;
   while (true) {
@@ -184,76 +223,64 @@ async function resolveCascades() {
     if (matches.size === 0) break;
     chain++;
 
-    // score: base 10 per candy, bonus for bigger groups, x chain multiplier
-    const gained = matches.size * 10 * chain;
-    score += gained;
+    score += matches.size * 10 * chain; // bigger groups + chains score more
     scoreEl.textContent = score;
+    chain >= 2 ? playStar() : playPop();
 
-    // animate clearing
-    matches.forEach(idx => {
-      const r = Math.floor(idx / SIZE), c = idx % SIZE;
-      cells[r][c].classList.add('clearing');
+    // pop animation + a little star burst at the first cleared candy
+    let first = true;
+    matches.forEach(key => {
+      const [r, c] = key.split(',').map(Number);
+      const candy = grid[r][c];
+      candy.inner.classList.add('pop');
+      if (first) {
+        const rect = candy.el.getBoundingClientRect();
+        starBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 4, false);
+        first = false;
+      }
     });
-    if (chain >= 2) playStar(); else playPop();
+    await wait(CLEAR_MS);
 
-    // star burst at the first cleared candy for delight
-    const firstIdx = matches.values().next().value;
-    starBurstFrom(cells[Math.floor(firstIdx / SIZE)][firstIdx % SIZE], 4);
+    matches.forEach(key => {
+      const [r, c] = key.split(',').map(Number);
+      grid[r][c].el.remove();
+      grid[r][c] = null;
+    });
 
-    await wait(240);
-
-    // remove from data (mark -1)
-    matches.forEach(idx => { grid[Math.floor(idx / SIZE)][idx % SIZE] = -1; });
-
-    collapse();
-    refill();
-    repaintAll();
-
-    // mark fresh drops for a little fall animation
-    cells.flat().forEach(cell => cell.classList.remove('clearing'));
-    await wait(180);
+    gravityAndRefill();
+    await wait(FALL_MS);
   }
 }
 
-/** Drop existing candies down into empty (-1) spots, per column. */
-function collapse() {
+/** Slide remaining candies down per column, then drop new ones in from above. */
+function gravityAndRefill() {
   for (let c = 0; c < SIZE; c++) {
     let write = SIZE - 1;
+    // compact existing candies toward the bottom
     for (let r = SIZE - 1; r >= 0; r--) {
-      if (grid[r][c] !== -1) {
-        grid[write][c] = grid[r][c];
-        if (write !== r) grid[r][c] = -1;
+      if (grid[r][c]) {
+        if (write !== r) {
+          grid[write][c] = grid[r][c];
+          grid[r][c] = null;
+          place(grid[write][c], write, c); // animated slide down
+        }
         write--;
       }
     }
-  }
-}
-
-/** Fill remaining empty cells (top of columns) with new candies. */
-function refill() {
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
-      if (grid[r][c] === -1) grid[r][c] = rndType();
+    // fill the gap (rows 0..write) with new candies stacked above the board
+    let spawnRow = -1;
+    for (let r = write; r >= 0; r--) {
+      const candy = makeCandy(rndType());
+      grid[r][c] = candy;
+      place(candy, spawnRow, c, true);              // start off-screen above
+      requestAnimationFrame(() => place(candy, r, c)); // then fall to target
+      spawnRow--;
     }
   }
 }
-
-function repaintAll() {
-  for (let r = 0; r < SIZE; r++) {
-    for (let c = 0; c < SIZE; c++) {
-      paint(r, c);
-      cells[r][c].classList.add('dropping');
-      // remove the class after the animation so it can replay later
-      const cell = cells[r][c];
-      setTimeout(() => cell.classList.remove('dropping'), 280);
-    }
-  }
-}
-
-const wait = (ms) => new Promise(res => setTimeout(res, ms));
 
 function endGame() {
-  const stars = Math.max(1, Math.floor(score / 300)); // ~1 star per 300 points
+  const stars = Math.max(1, Math.floor(score / 300));
   addStars(stars);
   topbar.refreshStars();
   const isBest = recordGameStat('candy', 'highScore', score, { mode: 'max' });
@@ -276,13 +303,17 @@ function endGame() {
   }, 500);
 }
 
-function newGame() {
-  score = 0; movesLeft = START_MOVES; busy = false; selected = null;
-  scoreEl.textContent = '0';
-  movesEl.textContent = START_MOVES;
-  makeGrid();
-  render();
+/* keep candies positioned correctly if the screen size changes */
+function relayout() {
+  measure();
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      if (grid[r][c]) place(grid[r][c], r, c, true);
+    }
+  }
 }
+window.addEventListener('resize', relayout);
+window.addEventListener('load', relayout); // in case CSS sizing settled late
 
 document.getElementById('restart').addEventListener('click', newGame);
 
