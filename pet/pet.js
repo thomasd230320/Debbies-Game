@@ -118,7 +118,7 @@ function rename() {
     type: 'text', maxlength: '14',
     value: shop.petName || pet.name,
     style: {
-      fontFamily: "'Poppins', sans-serif", fontSize: '1.4rem', textAlign: 'center',
+      fontFamily: "'Fredoka', sans-serif", fontSize: '1.4rem', textAlign: 'center',
       width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)',
       border: '3px solid var(--lilac)', outline: 'none',
     },

@@ -74,12 +74,12 @@ export const ITEM_BY_ID = Object.fromEntries(ACCESSORIES.map(a => [a.id, a]));
    =========================================================== */
 export const THEMES = [
   {
-    id: 'default', name: 'Periwinkle & Rose', emoji: '💜', cost: 0,
+    id: 'default', name: 'Baby Blue & Pink', emoji: '🩵', cost: 0,
     vars: {
-      '--blue': '#9DB8F0', '--blue-deep': '#5B7FE0',
-      '--pink': '#F2A8CB', '--pink-deep': '#E2719F',
-      '--lilac': '#C7B6EE', '--star': '#F4B72E',
-      '--grad-soft': 'linear-gradient(170deg, #F4F2FC 0%, #FBF1F6 100%)',
+      '--blue': '#AEDFF7', '--blue-deep': '#7FC6EE',
+      '--pink': '#FFD1E8', '--pink-deep': '#FFA8D2',
+      '--lilac': '#E6D7FF', '--star': '#FFD86B',
+      '--grad-soft': 'linear-gradient(160deg, #EAF7FF 0%, #FFF0F8 100%)',
     },
   },
   {

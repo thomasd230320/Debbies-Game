@@ -1,34 +1,33 @@
 /* ===========================================================
    Debbie's Game — shared design system (theme.css)
-   A more grown-up "tween" palette: periwinkle, rose & violet.
+   Baby blue + baby pink pastel theme. Used by every page.
    =========================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
-  /* palette — periwinkle + rose + violet (deeper, more grown-up) */
-  --blue: #9DB8F0;
-  --blue-deep: #5B7FE0;
-  --pink: #F2A8CB;
-  --pink-deep: #E2719F;
-  --lilac: #C7B6EE;
-  --violet-deep: #6C5CC9;
-  --cream: #FBFAFE;
-  --ink: #2E2A40;          /* deep slate-violet for strong, readable text */
-  --ink-soft: #6E6884;
-  --star: #F4B72E;
-  --good: #7FD6A0;
-  --good-deep: #36B36A;
-  --bad: #F2A6A6;
-  --bad-deep: #E26666;
+  /* palette */
+  --blue: #AEDFF7;
+  --blue-deep: #7FC6EE;
+  --pink: #FFD1E8;
+  --pink-deep: #FFA8D2;
+  --lilac: #E6D7FF;
+  --cream: #FFF9FC;
+  --ink: #5A4A6A;          /* soft purple-grey text (gentler than black) */
+  --ink-soft: #8E80A0;
+  --star: #FFD86B;
+  --good: #8DE0A0;
+  --good-deep: #4FC46A;
+  --bad: #FFB3B3;
+  --bad-deep: #FF8A8A;
 
-  /* shape + depth — slightly tighter corners, softer diffuse shadows */
-  --radius: 18px;
-  --radius-sm: 12px;
-  --shadow: 0 6px 18px rgba(46, 42, 64, .10);
-  --shadow-lift: 0 14px 30px rgba(46, 42, 64, .16);
-  --grad: linear-gradient(135deg, var(--blue-deep), var(--pink-deep));
-  --grad-soft: linear-gradient(170deg, #F4F2FC 0%, #FBF1F6 100%);
+  /* shape + depth */
+  --radius: 24px;
+  --radius-sm: 16px;
+  --shadow: 0 8px 22px rgba(127, 150, 255, .18);
+  --shadow-lift: 0 14px 30px rgba(127, 150, 255, .28);
+  --grad: linear-gradient(135deg, var(--blue), var(--pink));
+  --grad-soft: linear-gradient(160deg, #EAF7FF 0%, #FFF0F8 100%);
 }
 
 * { box-sizing: border-box; }
@@ -40,7 +39,7 @@ html, body {
 }
 
 body {
-  font-family: 'Nunito Sans', system-ui, sans-serif;
+  font-family: 'Nunito', system-ui, sans-serif;
   color: var(--ink);
   background: var(--grad-soft) fixed;
   -webkit-tap-highlight-color: transparent;
@@ -48,7 +47,7 @@ body {
   animation: fade-in .35s ease;
 }
 
-/* subtle soft glows behind everything (calmer than sparkles) */
+/* sparkly twinkles drawn behind everything */
 body::before {
   content: "";
   position: fixed;
@@ -56,21 +55,22 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(circle at 15% 12%, rgba(157, 184, 240, .18), transparent 38%),
-    radial-gradient(circle at 85% 20%, rgba(242, 168, 203, .18), transparent 40%),
-    radial-gradient(circle at 70% 88%, rgba(199, 182, 238, .16), transparent 42%);
+    radial-gradient(circle, rgba(255,255,255,.9) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(255,255,255,.7) 1.5px, transparent 2px);
+  background-size: 90px 90px, 140px 140px;
+  background-position: 0 0, 45px 70px;
+  animation: twinkle 4s ease-in-out infinite alternate;
 }
 
 h1, h2, h3, .display {
-  font-family: 'Poppins', 'Nunito Sans', sans-serif;
+  font-family: 'Fredoka', 'Nunito', sans-serif;
   font-weight: 700;
-  letter-spacing: -.01em;
   margin: 0;
 }
 
 /* ---- Gradient title text ---- */
 .title-gradient {
-  background: linear-gradient(120deg, var(--violet-deep), var(--pink-deep));
+  background: linear-gradient(135deg, var(--blue-deep), var(--pink-deep));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -79,12 +79,12 @@ h1, h2, h3, .display {
 
 /* ---- Buttons ---- */
 .btn {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   font-size: clamp(1rem, 1rem + .5vw, 1.25rem);
   font-weight: 600;
   color: var(--ink);
   background: #fff;
-  border: 2px solid var(--blue);
+  border: 3px solid var(--blue);
   border-radius: 999px;
   min-height: 56px;
   padding: 0 26px;
@@ -128,12 +128,12 @@ h1, h2, h3, .display {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   font-weight: 600;
   font-size: 1.1rem;
   color: var(--ink);
   background: #fff;
-  border: 2px solid var(--pink);
+  border: 3px solid var(--pink);
   border-radius: 999px;
   padding: 8px 18px;
   box-shadow: var(--shadow);
@@ -145,12 +145,12 @@ h1, h2, h3, .display {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--ink);
   background: #fff;
-  border: 2px solid var(--star);
+  border: 3px solid var(--star);
   border-radius: 999px;
   padding: 6px 16px;
   box-shadow: var(--shadow);
@@ -159,7 +159,7 @@ h1, h2, h3, .display {
   font-size: 1.4rem;
   line-height: 1;
   background: #fff;
-  border: 2px solid var(--lilac);
+  border: 3px solid var(--lilac);
   border-radius: 50%;
   width: 48px;
   height: 48px;
@@ -215,7 +215,7 @@ h1, h2, h3, .display {
   transform: translateX(-50%);
   background: #fff;
   color: var(--ink);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   font-weight: 600;
   font-size: 1.15rem;
   padding: 12px 22px;
@@ -249,12 +249,12 @@ h1, h2, h3, .display {
 /* ---- Pills / chips for level pickers ---- */
 .chip-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 14px 0; }
 .chip {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   font-weight: 600;
   font-size: 1rem;
   color: var(--ink);
   background: #fff;
-  border: 2px solid var(--lilac);
+  border: 3px solid var(--lilac);
   border-radius: 999px;
   padding: 8px 18px;
   cursor: pointer;
