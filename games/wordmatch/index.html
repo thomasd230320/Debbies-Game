@@ -45,18 +45,41 @@
     .choice.correct { background: var(--good); border-color: var(--good-deep); }
     .choice.wrong { background: var(--bad); border-color: var(--bad-deep); }
     .hud { font-family: 'Fredoka', sans-serif; font-size: 1.2rem; }
+    .timer-bar-wrap {
+      height: 16px;
+      background: #fff;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin: 12px auto;
+      max-width: 420px;
+    }
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--blue-deep), var(--pink-deep));
+    }
+    .timer-bar.low { background: linear-gradient(90deg, var(--bad-deep), var(--pink-deep)); }
   </style>
 </head>
 <body>
   <div id="topbar"></div>
   <main class="game-main">
     <h1 class="game-title title-gradient">Word Match 🔤</h1>
-    <p class="subtle">Read the word and tap the picture that matches!</p>
+    <p class="subtle">Read the word and tap the right picture — quick, beat the clock!</p>
+
+    <div class="chip-row" id="speed-row">
+      <button class="chip" data-time="8">🐢 Easy</button>
+      <button class="chip active" data-time="6">🙂 Medium</button>
+      <button class="chip" data-time="4">⚡ Hard</button>
+    </div>
+
     <div class="hud">📖 Word <strong id="num">1</strong> of <strong id="total">10</strong> · 🎯 <strong id="score">0</strong></div>
     <div class="word-card">
       <div class="the-word" id="word">apple</div>
       <button class="btn btn-blue" id="say-btn" style="margin-top:10px">🔊 Say it</button>
     </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
     <div class="choices" id="choices"></div>
   </main>
   <script type="module" src="wordmatch.js"></script>

@@ -28,14 +28,43 @@ const wordEl = document.getElementById('word');
 const choicesEl = document.getElementById('choices');
 const numEl = document.getElementById('num');
 const scoreEl = document.getElementById('score');
+const timerBar = document.getElementById('timer-bar');
 
 let queue = [];
 let index = 0;
 let score = 0;    // number of correct matches
 let earned = 0;   // stars actually awarded (doubled for this learning game)
 let answered = false;
+let perQuestionTime = 6; // seconds to answer each word (set by difficulty)
+let correctBtn = null;   // the right answer's button (to reveal on timeout)
+
+// per-question countdown driven by requestAnimationFrame
+let qStart = 0;
+let qRaf = null;
 
 document.getElementById('total').textContent = TOTAL;
+
+function startTimer() {
+  stopTimer();
+  qStart = performance.now();
+  const tick = (now) => {
+    const remaining = 1 - (now - qStart) / 1000 / perQuestionTime;
+    if (remaining <= 0) {
+      timerBar.style.width = '0%';
+      qRaf = null;
+      onTimeout();
+      return;
+    }
+    timerBar.style.width = (remaining * 100) + '%';
+    timerBar.classList.toggle('low', remaining < 0.34);
+    qRaf = requestAnimationFrame(tick);
+  };
+  qRaf = requestAnimationFrame(tick);
+}
+
+function stopTimer() {
+  if (qRaf) { cancelAnimationFrame(qRaf); qRaf = null; }
+}
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -55,6 +84,7 @@ function start() {
 
 function loadQuestion() {
   answered = false;
+  correctBtn = null;
   const item = queue[index];
   numEl.textContent = index + 1;
   wordEl.textContent = item.word;
@@ -67,15 +97,22 @@ function loadQuestion() {
   choicesEl.innerHTML = '';
   options.forEach(opt => {
     const btn = el('button', { class: 'choice', text: opt.emoji });
+    if (opt.emoji === item.emoji) correctBtn = btn;
     btn.addEventListener('click', () => onChoose(btn, opt, item));
     choicesEl.append(btn);
   });
+
+  // reset + start the countdown for this word
+  timerBar.classList.remove('low');
+  timerBar.style.width = '100%';
+  startTimer();
 }
 
 function onChoose(btn, opt, item) {
   if (answered) return;
   if (opt.emoji === item.emoji) {
     answered = true;
+    stopTimer();
     btn.classList.add('correct');
     score++;
     scoreEl.textContent = score;
@@ -86,6 +123,7 @@ function onChoose(btn, opt, item) {
     toast(pickPraise());
     setTimeout(next, 800);
   } else {
+    // wrong guess — clock keeps ticking!
     btn.classList.add('wrong');
     playWrong();
     toast(pickEncouragement());
@@ -93,13 +131,25 @@ function onChoose(btn, opt, item) {
   }
 }
 
+function onTimeout() {
+  if (answered) return;
+  answered = true;
+  stopTimer();
+  playWrong();
+  toast("⏰ Time's up!");
+  if (correctBtn) correctBtn.classList.add('correct'); // show the answer
+  setTimeout(next, 1000);
+}
+
 function next() {
+  stopTimer();
   index++;
   if (index >= queue.length) return finish();
   loadQuestion();
 }
 
 function finish() {
+  stopTimer();
   const isBest = recordGameStat('wordmatch', 'highScore', score, { mode: 'max' });
   const best = getHighScore('wordmatch');
   const streak = recordLearningPlay();
@@ -125,5 +175,15 @@ function finish() {
 }
 
 document.getElementById('say-btn').addEventListener('click', () => speak(queue[index].word));
+
+// difficulty: changes how long she has per word, then restarts the round
+document.getElementById('speed-row').addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('#speed-row .chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  perQuestionTime = parseInt(chip.dataset.time, 10);
+  start();
+});
 
 start();
