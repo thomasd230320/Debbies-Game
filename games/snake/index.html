@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Snake 🐍</title>
+  <meta name="theme-color" content="#AEDFF7" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    #board {
+      width: min(92vw, 420px);
+      aspect-ratio: 1;
+      margin: 14px auto;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      touch-action: none;
+      display: block;
+    }
+    .hud { font-family: 'Fredoka', sans-serif; font-size: 1.25rem; }
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 64px);
+      grid-template-rows: repeat(2, 64px);
+      gap: 8px;
+      justify-content: center;
+      margin: 12px auto;
+    }
+    .dpad button {
+      font-size: 1.6rem;
+      border: 3px solid var(--blue);
+      background: #fff;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .dpad button:active { transform: scale(.92); }
+    .du { grid-column: 2; grid-row: 1; }
+    .dl { grid-column: 1; grid-row: 2; }
+    .dd { grid-column: 2; grid-row: 2; }
+    .dr { grid-column: 3; grid-row: 2; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Snake 🐍</h1>
+    <p class="subtle">Eat the fruit 🍎 and grow — don't bump the walls or yourself! Swipe or use the arrows.</p>
+    <div class="hud">🍎 <strong id="score">0</strong></div>
+    <canvas id="board" width="420" height="420"></canvas>
+    <div class="dpad">
+      <button class="du" data-dir="up">⬆️</button>
+      <button class="dl" data-dir="left">⬅️</button>
+      <button class="dd" data-dir="down">⬇️</button>
+      <button class="dr" data-dir="right">➡️</button>
+    </div>
+    <button class="btn btn-primary btn-lg" id="start-btn">🚀 Start!</button>
+  </main>
+  <script type="module" src="snake.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+/* ===========================================================
+   candy.css — match-3 grid.
+   Candies are absolutely positioned and moved with transform,
+   so swaps slide and refills fall smoothly (no jumpy repaints).
+   =========================================================== */
+
+.candy-wrap {
+  width: min(94vw, 480px);
+  margin: 14px auto;
+}
+.candy-board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;            /* clips candies falling in from above */
+  touch-action: none;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+/* outer = position (animated via translate) */
+.candy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform .3s cubic-bezier(.25, .85, .35, 1.05); /* gentle ease + tiny bounce */
+  will-change: transform;
+  cursor: pointer;
+}
+.candy.no-anim { transition: none; }   /* for instant placement / resize */
+
+/* inner = the visible tile (scale/selection live here, never fights translate) */
+.candy-inner {
+  position: absolute;
+  inset: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.2rem, .5rem + 5vw, 2.2rem);
+  border-radius: 16px;
+  background: linear-gradient(160deg, #EAF7FF, #FFF0F8);
+  box-shadow: inset 0 -3px 6px rgba(90, 74, 106, .08);
+  transition: transform .15s ease, outline-color .15s ease;
+  outline: 0 solid transparent;
+}
+.candy.selected .candy-inner {
+  outline: 4px solid var(--pink-deep);
+  outline-offset: -4px;
+  transform: scale(1.06);
+}
+.candy-inner.pop { animation: candy-pop .26s ease-out forwards; }
+
+@keyframes candy-pop {
+  0%   { transform: scale(1);    opacity: 1; }
+  45%  { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(0);    opacity: 0; }
+}
+
+.candy-hud {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.2rem;
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candy { transition: none; }
+  .candy-inner.pop { animation: none; opacity: 0; }
+}

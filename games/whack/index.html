@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Whack-a-Mole 🔨</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <style>
+    .holes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 3vw, 20px);
+      width: min(92vw, 460px);
+      margin: 18px auto;
+    }
+    .hole {
+      aspect-ratio: 1;
+      background: radial-gradient(circle at 50% 130%, var(--lilac), var(--blue) 70%);
+      border-radius: 50%;
+      box-shadow: inset 0 -10px 18px rgba(90,74,106,.18), var(--shadow);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .mole {
+      font-size: clamp(2rem, 1rem + 8vw, 3.4rem);
+      transform: translateY(120%);
+      transition: transform .12s ease;
+      cursor: pointer;
+      line-height: 1;
+      padding-bottom: 8%;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .mole.up { transform: translateY(0); }
+    .mole.boom { animation: wiggle .3s ease; }
+    .hud { display: flex; justify-content: center; gap: 22px; font-family: 'Fredoka', sans-serif; font-size: 1.25rem; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Whack-a-Mole 🔨</h1>
+    <p class="subtle">Tap the moles 🐹 — but watch out for bombs 💣!</p>
+    <div class="hud">
+      <span>🎯 <strong id="score">0</strong></span>
+      <span>⏱️ <strong id="time">30</strong>s</span>
+    </div>
+    <div class="holes" id="holes"></div>
+    <button class="btn btn-primary btn-lg" id="start-btn">🚀 Start!</button>
+  </main>
+  <script type="module" src="whack.js"></script>
+</body>
+</html>

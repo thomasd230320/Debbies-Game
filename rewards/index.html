@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Rewards 🏆</title>
+  <meta name="theme-color" content="#FFD1E8" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>" />
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="rewards.css" />
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="game-main">
+    <h1 class="game-title title-gradient">Rewards 🏆</h1>
+
+    <div class="chip-row" id="tabs">
+      <button class="chip active" data-tab="me">🏅 Me</button>
+      <button class="chip" data-tab="daily">🎯 Daily</button>
+      <button class="chip" data-tab="trophies">🏆 Trophies</button>
+      <button class="chip" data-tab="stickers">🌟 Stickers</button>
+    </div>
+
+    <!-- Me: level + streak -->
+    <section id="tab-me" class="tab-panel">
+      <div class="level-badge"><span class="lvl-num" id="lvl-num">1</span><span class="lvl-word">Level</span></div>
+      <div class="level-title" id="lvl-title">Rookie</div>
+      <div class="xp-wrap">
+        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+        <div class="xp-text" id="xp-text"></div>
+      </div>
+      <h2 class="section-title">🔥 Play streak</h2>
+      <div class="streak-line" id="streak-line"></div>
+      <div class="calendar" id="calendar"></div>
+    </section>
+
+    <!-- Daily: challenge + spin -->
+    <section id="tab-daily" class="tab-panel" hidden>
+      <h2 class="section-title">🎯 Today's challenge</h2>
+      <div class="challenge-card" id="challenge-card"></div>
+      <h2 class="section-title">🎡 Lucky spin</h2>
+      <div class="spin-card">
+        <div class="wheel-area">
+          <div class="wheel-pointer">🔻</div>
+          <div class="wheel" id="wheel"></div>
+          <div class="wheel-hub">🎁</div>
+        </div>
+        <button class="btn btn-primary btn-lg" id="spin-btn">Spin!</button>
+        <p class="subtle" id="spin-note"></p>
+      </div>
+    </section>
+
+    <!-- Trophies -->
+    <section id="tab-trophies" class="tab-panel" hidden>
+      <p class="progress-line" id="ach-progress"></p>
+      <div class="grid-cards" id="ach-grid"></div>
+    </section>
+
+    <!-- Stickers -->
+    <section id="tab-stickers" class="tab-panel" hidden>
+      <p class="progress-line" id="sticker-progress"></p>
+      <div class="grid-cards" id="sticker-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="rewards.js"></script>
+</body>
+</html>
