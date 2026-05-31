@@ -63,12 +63,14 @@ function drawChallenge() {
 let wheelRotation = 0;
 function buildWheel() {
   const wheel = document.getElementById('wheel');
-  // place short labels around the 8 segments
+  // place each prize label at the centre of its segment, measured CLOCKWISE
+  // from the TOP (12 o'clock) — the same reference the pointer + landing math
+  // use, so the label under the pointer always matches the prize awarded.
   SPIN_WHEEL.forEach((seg, i) => {
     const angle = i * 45 + 22.5;
-    const label = el('div', { class: 'wheel-seg' },
-      seg.type === 'sticker' ? '🌟' : (seg.amount >= 50 ? '50⭐' : seg.amount + '⭐'));
-    label.style.transform = `rotate(${angle}deg) translate(78px) rotate(-${angle}deg)`;
+    const text = seg.type === 'sticker' ? '🌟' : (seg.amount >= 50 ? '50⭐' : seg.amount + '⭐');
+    const label = el('div', { class: 'wheel-seg' }, [el('span', {}, text)]);
+    label.style.transform = `rotate(${angle}deg) translate(0, -82px) rotate(${-angle}deg)`;
     wheel.append(label);
   });
 }

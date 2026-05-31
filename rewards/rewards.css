@@ -75,6 +75,7 @@
   transform-origin: 0 0;
   white-space: nowrap;
 }
+.wheel-seg > span { display: inline-block; transform: translate(-50%, -50%); }
 .wheel-hub {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
   width: 46px; height: 46px; border-radius: 50%; background: #fff;

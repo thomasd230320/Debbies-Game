@@ -76,20 +76,9 @@ const petLabel = shop.pet
   : 'Adopt a pet!';
 companion.append(el('div', { class: 'pet-label' }, petLabel));
 
-// game cards (some fun games unlock once enough stars have been earned)
-const lifetimeXp = lv.xp;
+// game cards
 const grid = document.getElementById('game-grid');
 for (const g of GAMES) {
-  const locked = g.unlockAtXp && lifetimeXp < g.unlockAtXp;
-  if (locked) {
-    grid.append(el('div', { class: `game-card accent-${g.accent} locked` }, [
-      el('div', { class: 'emoji' }, '🔒'),
-      el('div', { class: 'name' }, g.title),
-      el('div', { class: 'blurb' }, `Unlock at ${g.unlockAtXp} ⭐ earned`),
-      el('div', { class: 'lock-progress' }, `${Math.min(lifetimeXp, g.unlockAtXp)} / ${g.unlockAtXp}`),
-    ]));
-    continue;
-  }
   grid.append(el('a', {
     class: `game-card accent-${g.accent}`,
     href: g.path,
