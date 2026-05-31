@@ -61,6 +61,12 @@ function load() {
     s.games = { ...(parsed.games || {}) };
     s.stickers = Array.isArray(parsed.stickers) ? parsed.stickers : [];
     s.achievements = Array.isArray(parsed.achievements) ? parsed.achievements : [];
+    // Migration: saves made before XP existed have no `xp`. Backfill it from
+    // stars already earned so past progress counts (and games she already had
+    // don't get re-locked behind XP unlocks).
+    if (parsed.xp === undefined) {
+      s.xp = Math.max(s.totalStars || 0, s.xp || 0);
+    }
     return s;
   } catch (e) {
     memoryFallback = structuredClone(DEFAULT_STATE);
