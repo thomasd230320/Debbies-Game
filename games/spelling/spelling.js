@@ -7,7 +7,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise, pickEncouragement, toast } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getHighScore, recordLearningPlay } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, recordLearningPlay, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 import { speak, repeat, isSupported } from '../../js/shared/speech.js';
 import { WORD_LISTS } from './words.js';
 
@@ -133,6 +134,7 @@ function skip() {
 function finish() {
   const isBest = recordGameStat('spelling', 'highScore', score, { mode: 'max' });
   const best = getHighScore('spelling');
+  celebrateProgress(reportGameResult('spelling', { score, won: true }), topbar);
   const streak = recordLearningPlay();
   if (streak.bonus > 0) {
     topbar.refreshStars();

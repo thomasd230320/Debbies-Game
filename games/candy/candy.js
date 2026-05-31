@@ -8,7 +8,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurst, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playPop, playWrong, playWin, playStar } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 
 const SIZE = 8;
 const TYPES = ['🍓', '🍬', '🍭', '🍇', '🍊', '🫐'];
@@ -285,6 +286,7 @@ function endGame() {
   topbar.refreshStars();
   const isBest = recordGameStat('candy', 'highScore', score, { mode: 'max' });
   const best = getHighScore('candy');
+  celebrateProgress(reportGameResult('candy', { score }), topbar);
 
   setTimeout(() => {
     confetti();

@@ -5,7 +5,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playFreq, playWrong, playWin } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 
 const FREQS = [330, 415, 494, 587]; // pleasant 4-note chord
 const topbar = mountTopbar(document.getElementById('topbar'));
@@ -69,6 +70,7 @@ function gameOver() {
   topbar.refreshStars();
   const isBest = recordGameStat('simon', 'highScore', reached, { mode: 'max' });
   const best = getHighScore('simon');
+  celebrateProgress(reportGameResult('simon', { score: reached }), topbar);
   startBtn.hidden = false;
   statusEl.textContent = '';
 

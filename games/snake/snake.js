@@ -5,7 +5,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playPop, playWrong, playWin } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getHighScore } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 
 const GRID = 15;            // cells per side
 const canvas = document.getElementById('board');
@@ -112,6 +113,7 @@ function gameOver() {
   topbar.refreshStars();
   const isBest = recordGameStat('snake', 'highScore', score, { mode: 'max' });
   const best = getHighScore('snake');
+  celebrateProgress(reportGameResult('snake', { score }), topbar);
 
   setTimeout(() => {
     if (score >= 8) confetti();

@@ -5,7 +5,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin, playTap } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getGameStats } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getGameStats, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 
 const EMOJIS = ['🐶','🐱','🦊','🐼','🐰','🦄','🐸','🐧','🦋','🐢','🐝','🐙','🌸','🍓','⭐','🌈','🍩','🎈'];
 
@@ -133,6 +134,7 @@ function win() {
   const bestMoves = recordGameStat('memory', 'bestMoves', moves, { mode: 'min' });
   const bestTime = recordGameStat('memory', 'bestTime', seconds, { mode: 'min' });
   const stats = getGameStats('memory');
+  celebrateProgress(reportGameResult('memory', { won: true }), topbar);
 
   setTimeout(() => {
     confetti();

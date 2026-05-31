@@ -61,6 +61,7 @@ export const GAMES = [
     path: 'games/simon/index.html',
     accent: 'blue',
     learning: false,
+    unlockAtXp: 60,
   },
   {
     id: 'snake',
@@ -70,6 +71,7 @@ export const GAMES = [
     path: 'games/snake/index.html',
     accent: 'blue',
     learning: false,
+    unlockAtXp: 120,
   },
   {
     id: 'stars',
@@ -79,6 +81,7 @@ export const GAMES = [
     path: 'games/stars/index.html',
     accent: 'pink',
     learning: false,
+    unlockAtXp: 200,
   },
   {
     id: 'wordmatch',

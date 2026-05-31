@@ -318,6 +318,16 @@ h1, h2, h3, .display {
   filter: drop-shadow(0 8px 10px rgba(127, 150, 255, .25));
 }
 .pet-stage.wiggle .pet-base { animation: wiggle .5s ease; }
+/* pet grows with level — top stage gets a sparkle aura */
+.pet-grow-3 .pet-base { filter: drop-shadow(0 0 10px var(--star)) drop-shadow(0 8px 10px rgba(127, 150, 255, .25)); }
+.pet-grow-3::after {
+  content: '✨';
+  position: absolute;
+  top: 4%; right: 10%;
+  font-size: calc(var(--pet-size) * 0.3);
+  animation: float 3s ease-in-out infinite;
+  pointer-events: none;
+}
 .pet-acc {
   position: absolute;
   line-height: 1;

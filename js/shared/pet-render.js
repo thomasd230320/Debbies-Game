@@ -6,6 +6,15 @@
 
 import { el } from './ui.js';
 import { PET_BY_ID, ITEM_BY_ID, SLOTS } from './shop-catalog.js';
+import { getLevel } from './store.js';
+
+// pet grows with player level: bigger + a sparkle aura at higher stages
+function petStage() {
+  const lvl = getLevel().level;
+  if (lvl >= 8) return 3;
+  if (lvl >= 4) return 2;
+  return 1;
+}
 
 /**
  * Build a pet display element.
@@ -14,8 +23,10 @@ import { PET_BY_ID, ITEM_BY_ID, SLOTS } from './shop-catalog.js';
  * @returns {HTMLElement}
  */
 export function renderPet(shop, size = 120) {
-  const stage = el('div', { class: 'pet-stage' });
-  stage.style.setProperty('--pet-size', size + 'px'); // custom props need setProperty
+  const stageNum = petStage();
+  const grow = stageNum === 3 ? 1.25 : stageNum === 2 ? 1.12 : 1;
+  const stage = el('div', { class: 'pet-stage pet-grow-' + stageNum });
+  stage.style.setProperty('--pet-size', Math.round(size * grow) + 'px');
 
   const pet = shop && shop.pet ? PET_BY_ID[shop.pet] : null;
   if (!pet) {

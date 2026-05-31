@@ -6,7 +6,8 @@
 import { mountTopbar } from '../../js/shared/topbar.js';
 import { el, starBurstFrom, confetti, showModal, pickPraise, toast, pickEncouragement } from '../../js/shared/ui.js';
 import { playCorrect, playWrong, playWin } from '../../js/shared/sound.js';
-import { awardStars, recordGameStat, getHighScore, recordLearningPlay } from '../../js/shared/store.js';
+import { awardStars, recordGameStat, getHighScore, recordLearningPlay, reportGameResult } from '../../js/shared/store.js';
+import { celebrateProgress } from '../../js/shared/celebrate.js';
 import { speak } from '../../js/shared/speech.js';
 
 const PAIRS = [
@@ -152,6 +153,7 @@ function finish(timedOut = false) {
   const allDone = score === TOTAL;
   const isBest = recordGameStat('wordmatch', 'highScore', score, { mode: 'max' });
   const best = getHighScore('wordmatch');
+  celebrateProgress(reportGameResult('wordmatch', { score, won: score === TOTAL }), topbar);
   const streak = recordLearningPlay();
   if (streak.bonus > 0) {
     topbar.refreshStars();
